@@ -203,8 +203,8 @@ class LocalLocustRunner(LocustRunner):
         self.greenlet = self.hatching_greenlet
 
 class DistributedLocustRunner(LocustRunner):
-    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests, host=None, master_host="localhost"):
-        super(DistributedLocustRunner, self).__init__(locust_classes, hatch_rate, num_clients, num_requests, host)
+    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests, host=None, master_host="localhost", options=None):
+        super(DistributedLocustRunner, self).__init__(locust_classes, hatch_rate, num_clients, num_requests, host, options)
         self.master_host = master_host
     
     def noop(self, *args, **kwargs):

@@ -377,9 +377,9 @@ def main():
             runners.locust_runner.start_hatching(wait=True)
             main_greenlet = runners.locust_runner.greenlet
     elif options.master:
-        runners.locust_runner = MasterLocustRunner(locust_classes, options.hatch_rate, options.num_clients, num_requests=options.num_requests, host=options.host, master_host=options.master_host)
+        runners.locust_runner = MasterLocustRunner(locust_classes, options.hatch_rate, options.num_clients, num_requests=options.num_requests, host=options.host, master_host=options.master_host, custom_options)
     elif options.slave:
-        runners.locust_runner = SlaveLocustRunner(locust_classes, options.hatch_rate, options.num_clients, num_requests=options.num_requests, host=options.host, master_host=options.master_host)
+        runners.locust_runner = SlaveLocustRunner(locust_classes, options.hatch_rate, options.num_clients, num_requests=options.num_requests, host=options.host, master_host=options.master_host, custom_options)
         main_greenlet = runners.locust_runner.greenlet
     
     if options.print_stats or (options.no_web and not options.slave):
