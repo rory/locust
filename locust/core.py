@@ -90,12 +90,13 @@ class Locust(object):
     weight = 10
     """Probability of locust being chosen. The higher the weight, the greater is the chance of it being chosen."""
     
-    def __init__(self):
+    def __init__(self, options=None):
         super(Locust, self).__init__()
         if self.host is None:
             raise LocustError("You must specify the base host. Either in the host attribute in the Locust class, or on the command line using the --host option.")
         
         self.client = HttpSession(base_url=self.host)
+        self.options = options or {}
     
     def run(self):
         try:
@@ -205,6 +206,11 @@ class TaskSet(object):
     instantiated. Useful for nested TaskSet classes.
     """
 
+    options = None
+    """
+    Dict of some strings passed in by the user
+    """
+
     __metaclass__ = TaskSetMeta    
     
     def __init__(self, parent):
@@ -222,6 +228,7 @@ class TaskSet(object):
 
         self.parent = parent
         self.client = self.locust.client
+        self.options = self.locust.options
         
         # if this class doesn't have a min_wait, max_wait or avg_wait defined, copy it from Locust
         if not self.min_wait:

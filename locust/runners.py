@@ -28,7 +28,7 @@ SLAVE_REPORT_INTERVAL = 3.0
 
 
 class LocustRunner(object):
-    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests=None, host=None):
+    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests=None, host=None, options=None):
         self.locust_classes = locust_classes
         self.hatch_rate = hatch_rate
         self.num_clients = num_clients
@@ -38,6 +38,7 @@ class LocustRunner(object):
         self.state = STATE_INIT
         self.hatching_greenlet = None
         self.exceptions = {}
+        self.options = options or {}
         
         # register listener that resets stats when hatching is complete
         def on_hatch_complete(count):
@@ -72,6 +73,7 @@ class LocustRunner(object):
 
             if self.host is not None:
                 locust.host = self.host
+            locust.options = self.options
             if stop_timeout is not None:
                 locust.stop_timeout = stop_timeout
 
@@ -111,7 +113,7 @@ class LocustRunner(object):
                 occurence_count[locust.__name__] += 1
                 def start_locust(_):
                     try:
-                        locust().run()
+                        locust(options=self.options).run()
                     except GreenletExit:
                         pass
                 new_locust = self.locusts.spawn(start_locust, locust)
@@ -187,8 +189,8 @@ class LocustRunner(object):
         self.exceptions[key] = row
 
 class LocalLocustRunner(LocustRunner):
-    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests, host=None):
-        super(LocalLocustRunner, self).__init__(locust_classes, hatch_rate, num_clients, num_requests, host)
+    def __init__(self, locust_classes, hatch_rate, num_clients, num_requests, host=None, options=None):
+        super(LocalLocustRunner, self).__init__(locust_classes, hatch_rate, num_clients, num_requests, host, options)
 
         # register listener thats logs the exception for the local runner
         def on_locust_error(locust, e, tb):

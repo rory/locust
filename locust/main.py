@@ -191,6 +191,15 @@ def parse_options():
         help="show program's version number and exit"
     )
 
+    parser.add_option(
+        '-o', '--option',
+        dest="custom_options",
+        default=[],
+        nargs=2,
+        action="append",
+        help=""
+    )
+
     # Finalize
     # Return three-tuple of parser + the output from parse_args (opt obj, args)
     opts, args = parser.parse_args()
@@ -354,13 +363,15 @@ def main():
         logger.error("Locust can not run distributed with the web interface disabled (do not use --no-web and --master together)")
         sys.exit(0)
 
+    custom_options = dict(options.custom_options)
+
     if not options.no_web and not options.slave:
         # spawn web greenlet
         logger.info("Starting web monitor on port %s" % options.port)
         main_greenlet = gevent.spawn(web.start, locust_classes, options.hatch_rate, options.num_clients, options.num_requests, options.ramp, options.port)
     
     if not options.master and not options.slave:
-        runners.locust_runner = LocalLocustRunner(locust_classes, options.hatch_rate, options.num_clients, options.num_requests, options.host)
+        runners.locust_runner = LocalLocustRunner(locust_classes, options.hatch_rate, options.num_clients, options.num_requests, options.host, custom_options)
         # spawn client spawning/hatching greenlet
         if options.no_web:
             runners.locust_runner.start_hatching(wait=True)
